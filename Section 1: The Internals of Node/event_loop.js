@@ -10,7 +10,7 @@ filename.executeContents();
 function shouldContinue() {
     // Check one: Any pending setTimeout, setInterval, setInmmediate ?
     // Check one: Any pending OS tasks? (lise server listening to port)
-    // Check one: Any pending long running operations? (like fs moddule ones)
+    // Check one: Any pending long running operations? (like fs moddule ones and thread pool ones)
 
     return pendingTimers.length || pendingOSTasks.length || pendingOperations.length;
 }
