@@ -32,3 +32,6 @@ if (cluster.isMaster) {
         console.log(`Server listening on port ${PORT}`);
     });
 }
+
+// Benchmarking using ab command (apache benchmark), similar to artilery
+  // ab -c 50 -n 500 localhost:300/fast
