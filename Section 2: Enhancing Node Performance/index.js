@@ -1,19 +1,24 @@
-const express = require('express');
-const app = express();
+const cluster = require('cluster');
 
-const PORT = 3000;
+if (cluster.isMaster) {
+    cluster.fork();
+} else {
+    const express = require('express');
+    const app = express();
 
-function work(duration) {
-    const start = Date.now();
-    while((Date.now() - start) < duration) { }
+    const PORT = 3000;
+
+    function work(duration) {
+        const start = Date.now();
+        while((Date.now() - start) < duration) { }
+    }
+
+    app.get('/', (req, res) => {
+        work(5000);
+        res.send('Hallo');
+    });
+
+    app.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`);
+    });
 }
-
-app.get('/', (req, res) => {
-    work(5000);
-    res.send('Hallo');
-});
-
-
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-});
