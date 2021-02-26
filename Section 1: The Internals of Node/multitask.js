@@ -1,3 +1,6 @@
+process.env.UV_THREADPOOL_SIZE = 5;
+
+
 const https = require('https');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -38,24 +41,15 @@ makeHash();
 
 
 // RESULT:
-    // http request is always first (outside the thread pool)
-    //  then either 1 or 2 hash results
-    //  folowed by fs
-    //  final 2 or 3 hash
+    // fs comes first (has dedicated thread)
+    //  then http request
+    //  folowed by the slow hashes
 
 /*
-    request: 301
-    hash: 1333
-    hash: 1336
-    fs: 1336
-    hash: 1337
-    hash: 1361
-*/
-/*
-    request: 298
-    hash: 1308
-    fs: 1309
-    hash: 1317
-    hash: 1319
-    hash: 1323
+    fs: 50
+    request: 288
+    hash: 1199
+    hash: 1201
+    hash: 1203
+    hash: 1204
 */
