@@ -1,10 +1,11 @@
+process.env.UV_THREADPOOL_SIZE = 1; // every child will only have one thread available from the pool
+
 const cluster = require('cluster');
+const crypto = require('crypto');
 
 console.log(cluster.isMaster);
 
 if (cluster.isMaster) {
-    cluster.fork();
-    cluster.fork();
     cluster.fork();
 } else {
     const express = require('express');
@@ -12,15 +13,10 @@ if (cluster.isMaster) {
 
     const PORT = 3000;
 
-    function work(duration) {
-        const start = Date.now();
-        while((Date.now() - start) < duration) { }
-    }
-
     app.get('/', (req, res) => {
-        work(5000);
-        console.log('is slow');
-        res.send('Hallo');
+        crypto.pbkdf2('password', 'banana', 100000, 512, 'sha512', () => {
+            res.send('Hallo');
+        });
     });
 
     app.get('/fast', (req, res) => {
