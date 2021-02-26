@@ -1,6 +1,10 @@
 const cluster = require('cluster');
 
+console.log(cluster.isMaster);
+
 if (cluster.isMaster) {
+    cluster.fork();
+    cluster.fork();
     cluster.fork();
 } else {
     const express = require('express');
@@ -15,7 +19,13 @@ if (cluster.isMaster) {
 
     app.get('/', (req, res) => {
         work(5000);
+        console.log('is slow');
         res.send('Hallo');
+    });
+
+    app.get('/fast', (req, res) => {
+        console.log('is fast');
+        res.send('Vroom vroom');
     });
 
     app.listen(PORT, () => {
