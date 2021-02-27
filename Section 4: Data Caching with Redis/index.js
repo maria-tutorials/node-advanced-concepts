@@ -24,3 +24,13 @@ client.get('colors', console.log);
 client.set('colors', JSON.stringify({red: 'rojo'}));
 client.get('colors', console.log);
 client.get('colors', (_, val) => console.log(JSON.parse(val)));
+
+client.flushall();
+
+client.set('color', 'red', 'EX', 5);
+
+client.get('color', console.log);
+
+setTimeout(() => {
+    client.get('color', console.log);
+}, 6000);
