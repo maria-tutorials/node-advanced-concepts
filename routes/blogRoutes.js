@@ -14,7 +14,19 @@ module.exports = app => {
   });
 
   app.get('/api/blogs', requireLogin, async (req, res) => {
-    const blogs = await Blog.find({ _user: req.user.id });
+    const user_id = req.user.id;
+
+    const redis = require('redis');
+    const url = 'redis://127.0.0.1:6379';
+    const client = redis.createClient(url);
+
+    const util = require('util');
+    client.get = util.promisify(client.get);
+
+    const cached_blogs =  await client.get(user_id);
+
+
+    const blogs = await Blog.find({ _user: user_id });
 
     res.send(blogs);
   });
