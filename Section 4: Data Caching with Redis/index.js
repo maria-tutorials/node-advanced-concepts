@@ -17,3 +17,10 @@ client.hset('german', 'red', 'rot');
 
 client.hget('german', 'red', console.log);
 client.hget('german', 'blue', console.log);
+
+client.set('colors', {red: 'rojo'});
+client.get('colors', console.log);
+
+client.set('colors', JSON.stringify({red: 'rojo'}));
+client.get('colors', console.log);
+client.get('colors', (_, val) => console.log(JSON.parse(val)));
