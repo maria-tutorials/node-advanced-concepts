@@ -8,7 +8,16 @@ client.get = util.promisify(client.get);
 
 const exec = mongoose.Query.prototype.exec;
 
+mongoose.Query.prototype.cache = function () {
+    this._cache = true;
+    return this; // chainable
+}
+
 mongoose.Query.prototype.exec = async function () {
+    if (!this._cache) {
+        return exec.apply(this, arguments);
+    }
+
     const key = JSON.stringify(Object.assign({}, this.getQuery(), {
         collection: this.mongooseCollection.name
     }));
