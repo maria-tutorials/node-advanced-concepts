@@ -4,12 +4,14 @@ const util = require('util');
 
 const url = 'redis://127.0.0.1:6379';
 const client = redis.createClient(url);
-client.get = util.promisify(client.get);
+client.hget = util.promisify(client.hget);
 
 const exec = mongoose.Query.prototype.exec;
 
-mongoose.Query.prototype.cache = function () {
+mongoose.Query.prototype.cache = function(options = {}) {
     this._cache = true;
+    this._hashKey = JSON.stringify(options.key || 'default');
+
     return this; // chainable
 }
 
@@ -22,7 +24,7 @@ mongoose.Query.prototype.exec = async function () {
         collection: this.mongooseCollection.name
     }));
 
-    const cached_val =  await client.get(key);
+    const cached_val =  await client.hget(this._hashKey, key);
     if (cached_val) {
         const doc = JSON.parse(cached_val);
 
@@ -33,7 +35,7 @@ mongoose.Query.prototype.exec = async function () {
 
     const result = await exec.apply(this, arguments);
 
-    client.set(key, JSON.stringify(result), 'EX', 10);
+    client.hset(this._hashKey, key, JSON.stringify(result), 'EX', 10);
 
     return result;
 }
